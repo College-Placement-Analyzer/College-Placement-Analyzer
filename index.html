@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Placement Analytics & Student Application Tracker</title>
+  <meta name="description" content="Institutional Placement Command Center & Student Application Pipeline Tracker for Colleges and Universities.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div>
+        Campus Placement Analytics
+        <span class="batch-pill">2025 - 2026 Batch</span>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <button class="btn-primary" id="addApplicationBtn">
+        <i class="fas fa-plus-circle"></i> Add Student Application
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tab-navigation">
+    <button class="tab-btn active" data-tab="tab-overview">
+      <i class="fas fa-grip-horizontal"></i> Executive Overview
+    </button>
+    <button class="tab-btn" data-tab="tab-tracker">
+      <i class="fas fa-users-cog"></i> Individual Student Tracker
+    </button>
+    <button class="tab-btn" data-tab="tab-departments">
+      <i class="fas fa-university"></i> Department Performance
+    </button>
+    <button class="tab-btn" data-tab="tab-companies">
+      <i class="fas fa-building"></i> Companies & Salary Spectrum
+    </button>
+    <button class="tab-btn" data-tab="tab-skills">
+      <i class="fas fa-brain"></i> Skill Demand & Gap Radar
+    </button>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="main-container">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: EXECUTIVE OVERVIEW -->
+    <!-- ========================================================================= -->
+    <section id="tab-overview" class="tab-content active">
+      
+      <!-- KPI Metric Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Placement Percentage</span>
+            <div class="kpi-icon icon-green"><i class="fas fa-graduation-cap"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiPlacementRate">86.4%</div>
+          <div class="kpi-subtext">+4.2% YoY increase vs 2024 batch</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Average Package (CTC)</span>
+            <div class="kpi-icon icon-cyan"><i class="fas fa-coins"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiAvgPackage">12.8 LPA</div>
+          <div class="kpi-subtext">Highest: 44.5 LPA (Google SDE)</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Total Offers Issued</span>
+            <div class="kpi-icon icon-purple"><i class="fas fa-award"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiTotalOffers">612</div>
+          <div class="kpi-subtext">484 / 560 eligible students placed</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Active Recruiters</span>
+            <div class="kpi-icon icon-yellow"><i class="fas fa-briefcase"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiRecruiters">94</div>
+          <div class="kpi-subtext">32 Tier-1 Enterprise Tech Companies</div>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="charts-grid">
+        <div class="chart-card col-8">
+          <div class="chart-header">
+            <h2 class="chart-title"><i class="fas fa-chart-area" style="color: var(--accent-primary);"></i> Placement Velocity & Offer Growth</h2>
+          </div>
+          <div class="chart-body">
+            <canvas id="trendChartCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card col-4">
+          <div class="chart-header">
+            <h2 class="chart-title"><i class="fas fa-chart-pie" style="color: var(--accent-cyan);"></i> Salary Spectrum Breakdown</h2>
+          </div>
+          <div class="chart-body">
+            <canvas id="salaryDistCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: INDIVIDUAL STUDENT TRACKER (Prompt Reference System) -->
+    <!-- ========================================================================= -->
+    <section id="tab-tracker" class="tab-content">
+
+      <!-- Reference System Alert Info Box -->
+      <div class="info-alert-box">
+        <div class="info-alert-icon">
+          <i class="fas fa-clipboard-check"></i>
+        </div>
+        <div class="info-alert-content">
+          <h4>Practical Student Application Tracking System</h4>
+          <p>
+            Centralizing individual student applications with tracked parameters: 
+            <strong>Company Name</strong>, <strong>Role</strong>, <strong>Application Date</strong>, 
+            <strong>Color-Coded Status</strong> (<span style="color: var(--color-green); font-weight:700;">Green: Shortlisted/Offer</span>, <span style="color: var(--color-yellow); font-weight:700;">Yellow: Pending/Interview</span>, <span style="color: var(--color-red); font-weight:700;">Red: Rejected</span>), 
+            <strong>Test/Interview Date & Time</strong>, and <strong>Resume Version Submitted</strong> (e.g. <code>Resume_v1_DataAnalytics</code>). Includes Google Calendar sync alerts!
+          </p>
+        </div>
+      </div>
+
+      <!-- Search & Filters Control Bar -->
+      <div class="tracker-header-box">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="studentSearchInput" placeholder="Search by student name, company, role, or resume version...">
+        </div>
+
+        <div class="filter-group">
+          <select class="select-custom" id="deptFilterSelect">
+            <option value="ALL">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="AIDS">AI & Data Science</option>
+            <option value="ECE">ECE</option>
+            <option value="IT">IT</option>
+            <option value="ME">Mechanical</option>
+            <option value="CE">Civil</option>
+          </select>
+
+          <select class="select-custom" id="statusFilterSelect">
+            <option value="ALL">All Application Statuses</option>
+            <option value="Offer">Offer Received (Green)</option>
+            <option value="Shortlisted">Shortlisted (Green)</option>
+            <option value="Interview">Interview Scheduled (Yellow)</option>
+            <option value="Pending">Pending Evaluation (Yellow)</option>
+            <option value="Rejected">Rejected (Red)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Student Applications Data Table -->
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Student Name & Roll No</th>
+              <th>Company Name</th>
+              <th>Role</th>
+              <th>Application Date</th>
+              <th>Status (Color Coded)</th>
+              <th>Test/Interview Date & Time</th>
+              <th>Resume Version</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <!-- Dynamic rows rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: DEPARTMENT PERFORMANCE -->
+    <!-- ========================================================================= -->
+    <section id="tab-departments" class="tab-content">
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <h2 class="chart-title"><i class="fas fa-university" style="color: var(--accent-purple);"></i> Department Placement Rate vs Average CTC Package</h2>
+          </div>
+          <div class="chart-body" style="min-height: 380px;">
+            <canvas id="deptCompareCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: COMPANIES & SALARY SPECTRUM -->
+    <!-- ========================================================================= -->
+    <section id="tab-companies" class="tab-content">
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <h2 class="chart-title"><i class="fas fa-building" style="color: var(--accent-cyan);"></i> Top Recruiter Hiring Volume & Recruitment Stats</h2>
+          </div>
+          <div class="chart-body" style="min-height: 360px;">
+            <canvas id="companyHiringCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: SKILL DEMAND & GAP RADAR -->
+    <!-- ========================================================================= -->
+    <section id="tab-skills" class="tab-content">
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-header">
+            <h2 class="chart-title"><i class="fas fa-brain" style="color: var(--color-green);"></i> Skill Demand Index vs Student Proficiency Radar</h2>
+          </div>
+          <div class="chart-body" style="min-height: 420px;">
+            <canvas id="skillDemandCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ADD STUDENT APPLICATION -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="addApplicationModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Log New Student Application</h2>
+        <button class="close-btn close-modal-trigger">&times;</button>
+      </div>
+
+      <form id="addApplicationForm">
+        <div class="form-group">
+          <label>Student Full Name</label>
+          <input type="text" id="inputStudentName" class="form-control" placeholder="e.g. Rahul Sharma" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Department</label>
+            <select id="inputDept" class="form-control" required>
+              <option value="CSE">CSE</option>
+              <option value="AIDS">AI & Data Science</option>
+              <option value="ECE">ECE</option>
+              <option value="IT">IT</option>
+              <option value="ME">Mechanical</option>
+              <option value="CE">Civil</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="inputCompany" class="form-control" placeholder="e.g. Goldman Sachs" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Role</label>
+            <input type="text" id="inputRole" class="form-control" placeholder="e.g. Software Engineer" required>
+          </div>
+
+          <div class="form-group">
+            <label>Status (Color Coded)</label>
+            <select id="inputStatus" class="form-control" required>
+              <option value="Shortlisted">Shortlisted (Green)</option>
+              <option value="Offer">Offer Received (Green)</option>
+              <option value="Interview">Interview Scheduled (Yellow)</option>
+              <option value="Pending">Pending (Yellow)</option>
+              <option value="Rejected">Rejected (Red)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Test / Interview Date & Time</label>
+            <input type="text" id="inputTestDate" class="form-control" placeholder="e.g. 2025-11-15 10:00 AM">
+          </div>
+
+          <div class="form-group">
+            <label>Resume Version Submitted</label>
+            <input type="text" id="inputResumeVersion" class="form-control" placeholder="e.g. Resume_v1_DataAnalytics.pdf">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary close-modal-trigger">Cancel</button>
+          <button type="submit" class="btn-primary">Save Application Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: VIEW INDIVIDUAL STUDENT PROFILE CARD -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="studentProfileModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Individual Student Profile & Pipeline</h2>
+        <button class="close-btn close-modal-trigger">&times;</button>
+      </div>
+      <div id="studentProfileContent">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Campus Placement Analytics Dashboard & Student Application Tracker &copy; 2026. Designed for Colleges & Universities.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
