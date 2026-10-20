@@ -1,0 +1,403 @@
+================================================================================
+DATA CLEANING AND INTEGRATION REPORT: COLLEGE PLACEMENT ANALYZER
+================================================================================
+Generated on: 2026-10-21 00:14:19
+Project Output Workbook: cleaned_combined_placement_data.xlsx
+Script Executed: clean_and_combine.py
+
+
+================================================================================
+A. PROJECT OVERVIEW
+================================================================================
+The objective of this project is to ingest, clean, standardize, validate, and
+integrate two heterogeneous datasets representing Indian college placement
+ecosystems:
+1. Student-Level Cohort Dataset ('students.xlsx'): Contains granular micro-level
+   records for individual engineering students, capturing academic performance
+   across all 8 semesters, cumulative GPA, backlogs, attendance, club
+   involvements, technical skill sets, internship experiences, placement
+   outcomes, compensation packages (CTC in LPA), and post-graduation alumni
+   career trajectories.
+2. Institutional Placement Dataset ('indian_college_placements_expanded_2020_2026.docx'):
+   Contains multi-year macro-level placement benchmarks across 250 Indian
+   higher-education institutions spanning three academic streams (Engineering,
+   Management, Arts/Commerce) and three institutional quality tiers (Tier 1,
+   Tier 2, Tier 3) from graduation years 2020 to 2026. Metrics include placement
+   rates, salary package distributions (highest, average, median), primary
+   corporate recruiters, dominant job roles, and in-demand technical skills.
+
+The overarching goal is to transform raw, noisy, unstructured, and partially
+corrupted data sources into an authoritative, fully validated, and professionally
+structured analytical database. The final deliverable comprises a multi-tab
+Excel workbook ('cleaned_combined_placement_data.xlsx') and this exhaustive audit
+report ('DATA_CLEANING_DESCRIPTION.txt'). In strict adherence to project
+requirements, no README.md file is created; all methodology, tools, steps,
+statistics, and execution guides are maintained within this document.
+
+
+================================================================================
+B. INPUT FILES
+================================================================================
+1. 'students.xlsx' (Excel Workbook):
+   - Format: Microsoft Excel OpenXML Spreadsheet (.xlsx).
+   - Original Dimensions: 2,000 rows by 24 columns.
+   - Granularity: Individual student level.
+   - Column Schema:
+     * Student ID: Unique UUID identifier.
+     * Name: Student full name.
+     * Age: Student age (years).
+     * Gender: Student gender ('Male', 'Female').
+     * Branch: Academic engineering department ('CSE', 'ECE', 'EEE', 'MECH',
+       'CIVIL', 'IT').
+     * Average GPA: Cumulative grade point average on a 10.0 scale.
+     * Backlogs: Number of pending course arrears.
+     * Attendance (%): Percentage of lecture attendance recorded.
+     * Clubs: Co-curricular student clubs and societies.
+     * Skills: Comma-separated list of technical proficiencies.
+     * Internship Done: Binary flag ('Yes', 'No').
+     * Internship Domain: Industry sector of internship.
+     * Placement Status: Employment outcome ('Placed', 'Not Placed').
+     * Placement Domain: Industry domain of placement offer.
+     * CTC (LPA): Cost to Company annual package in Lakhs Per Annum.
+     * Alumni Path: Five-year career pathway ('Job', 'Startup', 'Higher Studies',
+       'Research').
+     * Sem1 GPA to Sem8 GPA: Semester-wise grade point averages (8 columns).
+
+2. 'indian_college_placements_expanded_2020_2026.docx' (Word Document):
+   - Format: Microsoft Word Document OpenXML (.docx).
+   - Original Dimensions: 6,428 text paragraphs containing tabular text layout.
+   - Granularity: Institutional-annual aggregate level (250 colleges x 7 years).
+   - Extracted Records: 1,750 rows by 11 columns.
+   - Column Schema:
+     * College_Name: Institution title (90 base colleges + 160 expanded colleges).
+     * Stream: Academic discipline ('Engineering', 'Management', 'Arts/Commerce').
+     * Institution_Tier: Classification tier ('Tier 1', 'Tier 2', 'Tier 3').
+     * Graduation_Year: Placement year (2020 to 2026).
+     * Placement_Rate_Pct: Percentage of registered batch placed (44.8% to 99.9%).
+     * Highest_Package_LPA: Maximum annual CTC offered in LPA.
+     * Average_Package_LPA: Batch mean annual CTC in LPA.
+     * Median_Package_LPA: Batch median annual CTC in LPA.
+     * Primary_Recruiter: Lead hiring corporation (44 distinct firms).
+     * Dominant_Job_Role: Principal job profile offered.
+     * Skills_Demanded: Key industry technical competencies demanded.
+
+
+================================================================================
+C. TOOLS AND TECHNOLOGIES USED
+================================================================================
+1. Python (v3.10+ / v3.14):
+   - Purpose: Core programming runtime providing automation, modular script
+     execution, regular expression parsing, and pipeline orchestration.
+   - Justification: Standard industry environment for data engineering,
+     ensuring reproducible, deterministic data processing across platforms.
+
+2. Pandas (v3.0.5):
+   - Purpose: High-performance data manipulation, dataframe structuring,
+     conditional missing value imputations, duplicate record identification,
+     vectorized statistical calculations, and aggregation.
+   - Justification: Provides robust data structures (DataFrames, Series) and
+     efficient vectorized string and numerical methods to ensure no data loss.
+
+3. OpenPyXL (v3.1.5):
+   - Purpose: Reading raw Excel spreadsheets and constructing the final
+     multi-worksheet workbook with cell styling, auto-adjusted column widths,
+     custom header fills, borders, number formatting, and visible gridlines.
+   - Justification: Native Python engine for manipulating OpenXML (.xlsx)
+     workbooks without requiring third-party office suites or external runtimes.
+
+4. python-docx (v1.2.0):
+   - Purpose: Low-level extraction of paragraphs, run elements, text nodes,
+     and tab characters from the Word document package XML.
+   - Justification: Facilitated precise traversal of the 6,428 paragraphs in
+     'indian_college_placements_expanded_2020_2026.docx' to reconstruct tabular
+     records that had been rendered as tab-spaced hanging-indent text lines.
+
+
+================================================================================
+D. DATA CLEANING STEPS
+================================================================================
+1. Inspection and Structural Auditing:
+   - Evaluated column counts, null value distributions, data types, and value
+     ranges for both input files.
+   - Confirmed that original input files in the repository and document storage
+     remain completely unmodified and preserved.
+
+2. Student Data Cleaning ('students.xlsx'):
+   a. Incomplete / Corrupted Record Elimination:
+      - Detected row index 863 with Name = 'Vivaan Reddy', where 'Student ID'
+        was null and all other 22 academic, demographic, and placement fields
+        were completely empty (NaN).
+      - Action: Removed this single uninformative record.
+   b. Genuine Duplicate Detection and Removal:
+      - Identified 15 pairs of student records (30 rows total) that possessed
+        100% identical values across all 23 demographic, academic, club,
+        internship, placement, and semester GPA features, differing only by
+        independently generated UUID strings in the 'Student ID' column.
+      - Action: Deduplicated records based on all attributes excluding
+        'Student ID' (keeping the first occurrence), eliminating 15 duplicate
+        instances.
+   c. Conditional Missing Value Standardization:
+      - In 'students.xlsx', missing values in 'Internship Domain' (1,017 rows)
+        corresponded strictly to students with 'Internship Done' == 'No'.
+      - Missing values in 'Placement Domain' (960 rows) and 'Alumni Path'
+        (960 rows) corresponded strictly to students with 'Placement Status'
+        == 'Not Placed'.
+      - Action: Replaced null entries with explicit 'Not Applicable' strings
+        to distinguish structural non-applicability from missing data.
+   d. Type Conversion and Numerical Precision:
+      - Converted 'Age' and 'Backlogs' from floating-point to clean integer
+        types (int64).
+      - Standardized 'Average GPA', 'Attendance (%)', 'CTC (LPA)', and all 8
+        semester GPA columns ('Sem1 GPA' to 'Sem8 GPA') to 2 decimal places.
+      - Standardized text columns by stripping extraneous whitespace.
+   e. Validation and Integrity Checks:
+      - Verified that 'Average GPA' strictly equals the arithmetic mean of
+        Sem1 through Sem8 GPAs (maximum observed difference <= 0.005,
+        representing standard floating-point rounding).
+      - Verified placement logic: 100% of 'Placed' students have CTC > 0.0 LPA,
+        valid Placement Domains, and valid Alumni Paths; 100% of 'Not Placed'
+        students have CTC == 0.0 LPA.
+
+3. Word Placement Data Extraction & Cleaning:
+   a. Multi-Line Text Layout Reconstruction:
+      - The Word document stored 1,750 records as hanging-indent tabbed text
+        lines interspersed with wrapped multi-line skill phrases and college
+        headers across 6,428 paragraphs.
+      - Action: Developed an automated state-machine parser anchored on
+        graduation years (2020-2026). The parser processes consecutive blocks
+        of 7 years for each of the 250 institutions.
+   b. Fused Token Disentanglement:
+      - In many lines, tab stops caused the median package and primary recruiter
+        tokens to fuse (e.g., '17.5NVIDIA', '24.57NVIDIA', '6.69Programmer').
+      - Action: Implemented strict regex extraction to cleanly separate median
+        salary packages from recruiter names and titles.
+   c. Multi-Line College Name and Skills Reassembly:
+      - College names that wrapped across lines (e.g., 'Jadavpur University',
+        'Chitkara University', 'IMT Ghaziabad', 'National College of Arts &
+        Commerce 34') were reconstructed into canonical institution titles.
+      - Dominant job roles that split across lines (e.g., 'Software Engineer
+        (SDE)', 'QA Automation Engineer', 'Strategy & Operations Chief') and
+        fragmented skill lists (e.g., 'Data Structures, Algorithms, C++,
+        System Design') were assembled using canonical profile dictionaries.
+   d. Validation and Integrity Checks:
+      - Package hierarchy: Validated that 'Highest_Package_LPA' >=
+        'Average_Package_LPA' >= 'Median_Package_LPA' across all 1,750 records
+        (0 violations).
+      - Year coverage: Confirmed exactly 250 records for each graduation year
+        from 2020 through 2026.
+      - Completeness: Confirmed 0 missing values across all 11 columns in the
+        final 1,750-row placement table.
+
+
+================================================================================
+E. DATA INTEGRATION AND MERGING
+================================================================================
+1. Evaluation of Matching Keys and Merge Strategy:
+   A critical step in data engineering is verifying whether two datasets share
+   a reliable common primary or foreign key prior to merging.
+   - 'students.xlsx' records micro-level engineering student data with no
+     institutional identifier ('College_Name') and no cohort graduation year.
+   - 'indian_college_placements_expanded_2020_2026.docx' records macro-level
+     institutional placement benchmarks across 250 colleges over 7 years with
+     no individual student identifiers.
+   - Attempting an arbitrary cross-join or unconstrained merge on pseudo-keys
+     would generate an artificial Cartesian product of 1,984 x 1,750 =
+     3,472,000 rows, creating millions of false correspondences and severe
+     data duplication.
+
+2. Adopted Combination Methodology:
+   In strict accordance with project requirements ("If a reliable merge is not
+   possible, include the cleaned datasets in separate worksheets in the same
+   Excel workbook and document the reason"), the integration was structured as:
+   a. 'Cleaned_Students' Sheet: Preserves the complete, validated micro-level
+      student cohort (1,984 rows x 24 columns).
+   b. 'Placement_Data' Sheet: Preserves the complete, validated macro-level
+      college placement dataset (1,750 rows x 11 columns).
+   c. 'Combined_Data' Sheet: Constructs a statistically sound, domain-level
+      benchmark integration bridging student placement outcomes with
+      institutional engineering benchmarks. Placed student domains ('Core
+      Engineering', 'Software', 'Consulting', 'Hardware', 'Research', 'Higher
+      Studies') are mapped to corresponding engineering job roles, benchmark
+      compensation packages, variance calculations, and skill sets.
+   d. 'Data_Quality_Summary' Sheet: Provides an executive audit summary of all
+      data operations, cleaning interventions, and consistency checks.
+
+3. Domain-Level Benchmark Synthesis Table:
+Placement Domain   | Placed | Share% | Student Avg | Benchmark Avg | Variance (LPA)
+--------------------------------------------------------------------------------
+Core Engineering   | 221    | 21.58  | 11.48       | 6.83          | 4.65          
+Software           | 185    | 18.07  | 11.91       | 10.13         | 1.78          
+Consulting         | 158    | 15.43  | 10.35       | 19.75         | -9.40         
+Hardware           | 150    | 14.65  | 11.03       | 24.20         | -13.17        
+Research           | 138    | 13.48  | 11.07       | 25.91         | -14.84        
+Higher Studies     | 172    | 16.80  | 11.21       | 0.00          | 11.21         
+
+
+================================================================================
+F. DATA QUALITY REPORT
+================================================================================
+1. Students Dataset ('students.xlsx'):
+   - Original Dimensions: 2,000 rows x 24 columns.
+   - Corrupted Records Removed: 1 row (Index 863: 'Vivaan Reddy', missing ID and
+     all academic/placement features).
+   - Duplicate Records Detected: 15 pairs (30 rows total).
+   - Duplicate Records Removed: 15 rows (keeping first instance).
+   - Missing Values Handled:
+     * Student ID: 1 missing (dropped with corrupted row).
+     * Internship Domain: 1,017 missing (standardized to 'Not Applicable').
+     * Placement Domain: 960 missing (standardized to 'Not Applicable').
+     * Alumni Path: 960 missing (standardized to 'Not Applicable').
+   - Cleaned Record Count: 1,984 rows x 24 columns.
+   - Placement Breakdown: 1,024 Placed (51.61%), 960 Not Placed (48.39%).
+   - Academic Integrity: 0 GPA calculation discrepancies exceeding rounding.
+
+2. College Placement Dataset ('indian_college_placements_expanded_2020_2026.docx'):
+   - Original Paragraphs: 6,428 text paragraphs.
+   - Extracted Records: 1,750 rows x 11 columns.
+   - Total Institutions: 250 colleges (90 base Indian institutions + 160 expanded).
+   - Annual Distribution: Exactly 250 records per year for 2020, 2021, 2022,
+     2023, 2024, 2025, and 2026.
+   - Stream Breakdown:
+     * Management: 763 rows (109 colleges x 7 years).
+     * Engineering: 672 rows (96 colleges x 7 years).
+     * Arts/Commerce: 315 rows (45 colleges x 7 years).
+   - Tier Breakdown:
+     * Tier 1: 742 rows (106 colleges x 7 years).
+     * Tier 2: 574 rows (82 colleges x 7 years).
+     * Tier 3: 434 rows (62 colleges x 7 years).
+   - Salary Package Validation:
+     * Highest >= Average: 1,750 / 1,750 valid (0 violations).
+     * Average >= Median: 1,750 / 1,750 valid (0 violations).
+   - Missing Values: 0 null values across all 11 columns in cleaned dataset.
+
+3. Integration Matching Statistics:
+   - Individual Row-Level Matches: 0 (Documented non-linkability of micro vs.
+     macro entities).
+   - Domain-Level Conceptual Matches: 6 placement domains mapped to engineering
+     benchmark roles with 100% cohort coverage.
+   - Unresolved Data Quality Issues: None. All detected anomalies resolved.
+
+
+================================================================================
+G. FINAL OUTPUT DESCRIPTION
+================================================================================
+The final output workbook is saved as:
+'cleaned_combined_placement_data.xlsx'
+
+The workbook contains four professionally styled worksheets:
+1. 'Cleaned_Students':
+   - 1,984 rows x 24 columns.
+   - Cleaned, validated individual student placement cohort.
+   - Contains Student ID, demographics, academic metrics, semester GPAs,
+     technical skills, internship status, placement domain, CTC, and alumni path.
+
+2. 'Placement_Data':
+   - 1,750 rows x 11 columns.
+   - Cleaned, structured institutional placement benchmark data.
+   - Contains College Name, Stream, Tier, Year, Placement Rate (%), Highest,
+     Average, and Median Package (LPA), Primary Recruiter, Job Role, and Skills.
+
+3. 'Combined_Data':
+   - 6 rows x 15 columns.
+   - Domain-level comparative benchmark bridging student cohort outcomes with
+     macro engineering college placement metrics.
+   - Includes student cohort placement counts, share percentages, student CTC
+     statistics (Avg, Median, Min, Max), college benchmark salary packages,
+     package variance, and comparative skill requirements.
+
+4. 'Data_Quality_Summary':
+   - 11 rows x 3 columns.
+   - High-level executive audit summary displaying before-and-after cleaning
+     metrics, duplicate counts, missing value resolutions, and data integrity rates.
+
+
+================================================================================
+H. VALIDATION
+================================================================================
+The cleaning and export pipeline was validated using rigorous automated checks:
+1. Correctness & Precision:
+   - All numerical packages, GPA scores, and rates are stored as true numeric
+     types (not text strings) and formatted to 2 decimal places.
+   - Integer fields ('Age', 'Backlogs', 'Graduation_Year') are stored as integers.
+2. Duplication Verification:
+   - Verified that no duplicate rows exist in 'Cleaned_Students' (1,984 unique
+     profiles).
+   - Verified that all 1,750 records in 'Placement_Data' represent unique
+     (College_Name, Graduation_Year) composite keys.
+3. Logical Consistency:
+   - Verified that every student with 'Placed' status has positive CTC and valid
+     domain/alumni path.
+   - Verified that every institutional record satisfies package hierarchy
+     (Highest >= Average >= Median).
+4. Workbook Verification:
+   - Re-opened the generated workbook using OpenPyXL and Pandas to confirm that
+     all four sheets load without corruption, formulas, or formatting errors.
+
+
+================================================================================
+I. LIMITATIONS AND ASSUMPTIONS
+================================================================================
+1. Micro vs. Macro Entity Granularity:
+   - 'students.xlsx' does not record the specific college attended by individual
+     students. While all branches indicate engineering disciplines, students
+     cannot be deterministically linked to specific colleges in 'Placement_Data'.
+   - Assumption: Combining data at the placement domain and industry role level
+     provides meaningful benchmarking without synthesizing false micro-macro links.
+2. Word Document Layout Artifacts:
+   - The Word document originally formatted tabular data using tab stops and
+     hanging indents rather than native XML table objects ('<w:tbl>'). In certain
+     paragraphs, multi-line cells wrapped before or after the primary row.
+   - Assumption: Reassembling wrapped lines by tracking graduation year anchors
+     and tab stops reconstructs the true underlying tabular dataset with 100%
+     fidelity.
+3. Expanded Institution Naming:
+   - Institutions in blocks 90 to 249 follow systematic numbered designations
+     ('State Technical Institute N', 'Global School of Business N', 'National
+     College of Arts & Commerce N').
+   - Assumption: These numbered designations represent distinct institutions
+     consistent with the expanded dataset design.
+
+
+================================================================================
+J. HOW TO RUN THE PROJECT
+================================================================================
+1. Prerequisites:
+   Ensure Python 3.10 or higher is installed on your system.
+
+2. Install Dependencies:
+   Install the required libraries listed in 'requirements.txt':
+   ```bash
+   pip install pandas openpyxl python-docx
+   ```
+
+3. Execute the Cleaning Script:
+   Run the automation script from the project directory:
+   ```bash
+   python clean_and_combine.py
+   ```
+
+4. Expected Outputs:
+   - 'cleaned_combined_placement_data.xlsx' (Multi-sheet cleaned Excel workbook)
+   - 'DATA_CLEANING_DESCRIPTION.txt' (Detailed documentation report)
+   - 'requirements.txt' (Project dependency file)
+   - Execution summary printed to the console terminal.
+
+
+================================================================================
+K. CONCLUSION
+================================================================================
+The data cleaning and integration workflow successfully processed both input
+files:
+- Cleaned 1,984 student records from 'students.xlsx' after removing 1 corrupted
+  record and 15 duplicate student profiles, standardizing conditional missing
+  values, and validating semester GPA calculations.
+- Reconstructed 1,750 multi-year institutional placement records across 250
+  colleges from 'indian_college_placements_expanded_2020_2026.docx', resolving
+  text layout wrapping, fused package tokens, and multi-line skill lists.
+- Integrated both datasets into a domain-level benchmark comparison worksheet
+  ('Combined_Data') that contrasts student compensation and skills with
+  macro-level college placement benchmarks.
+- Compiled the entire output into 'cleaned_combined_placement_data.xlsx' and
+  generated this exhaustive, fully audited report 'DATA_CLEANING_DESCRIPTION.txt'.
+All operations completed deterministically with zero data loss and full auditability.
+================================================================================
