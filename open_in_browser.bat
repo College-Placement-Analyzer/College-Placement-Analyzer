@@ -1,0 +1,3 @@
+@echo off
+echo Opening College Placement Tracker in default browser...
+start "" "%~dp0index.html"
