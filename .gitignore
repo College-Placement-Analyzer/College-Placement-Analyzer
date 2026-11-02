@@ -6,6 +6,8 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+.venv/
+data/matplotlib_cache/
 
 # IDE / Editor settings
 .vscode/

@@ -9,3 +9,4 @@ echo Press Ctrl+C to stop.
 echo.
 python server.py
 pause
+
