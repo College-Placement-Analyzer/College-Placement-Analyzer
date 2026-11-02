@@ -660,3 +660,4 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
 if __name__ == '__main__':
     out_pdf = 'College_Placement_Comprehensive_Analytics_Report.pdf'
     build_pdf(out_pdf)
+

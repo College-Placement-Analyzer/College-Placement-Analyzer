@@ -255,3 +255,4 @@ if __name__ == '__main__':
     print(f"Saved {len(df_student)} rows to {student_out}")
     print(df_student.info())
     print("\nSample:\n", df_student.head(3))
+
