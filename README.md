@@ -1,6 +1,6 @@
-# College Placement Tracker & Analytics Command Center
+# College Placement Analyzer & Analytics Command Center
 
-An institutional-grade placement management and analytics platform for colleges and universities to track student applications, recruiter pipelines, interview stages, offer statuses, and department-level placement statistics.
+College Placement Analyzer is an institutional-grade, web-based platform that analyzes placement data to show hiring trends, salary packages, placement rates, company statistics, and skill demand. It tracks student applications, recruiter pipelines, interview stages, and departmental performance to help students, faculty, Training & Placement Officers (TPOs), and management make better, data-driven decisions.
 
 ---
 
@@ -9,35 +9,43 @@ An institutional-grade placement management and analytics platform for colleges 
 ```
 college-placement-tracker/
 ├── College_Placement_Comprehensive_Analytics_Report.pdf  # Comprehensive 8-page multi-dataset analytics report
-├── charts/                          # 19 High-resolution publication-quality visualization figures
-├── data/                            # Processed & cleaned CSV datasets
-│   ├── college_placement_trends.csv # Institutional trends (250 Colleges, 7 Cohorts 2020-2026, 1,750 records)
-│   └── student_placement_records.csv# Student records (1,999 Engineers, 24 academic/placement variables)
-├── scripts/                         # Pipeline scripts for dataset parsing, charting & PDF generation
-│   ├── export_datasets.py           # Extracts and validates both datasets from source files
-│   ├── generate_charts.py           # Generates all 19 chart figures across both datasets
+├── Project Idea and Introduction.pdf # Project vision, objectives and architectural introduction
+├── students.xlsx                     # Raw student placement dataset (2,000 engineering student records)
+├── indian_college_placements_expanded_2020_2026.docx # Raw institutional placement dataset (250 colleges, 2020-2026)
+├── cleaned_combined_placement_data.xlsx # Cleaned and merged placement data workbook
+├── clean_and_combine.py              # Data cleaning and harmonization script
+├── DATA_CLEANING_DESCRIPTION.txt     # Detailed methodology and audit log of data cleaning procedures
+├── charts/                           # 19 High-resolution publication-quality visualization figures
+├── data/                             # Processed & cleaned CSV datasets
+│   ├── college_placement_trends.csv  # Institutional trends (250 Colleges, 7 Cohorts 2020-2026, 1,750 records)
+│   └── student_placement_records.csv # Student records (1,999 Engineers, 24 academic/placement variables)
+├── scripts/                          # Pipeline scripts for dataset parsing, charting & PDF generation
+│   ├── export_datasets.py            # Extracts and validates both datasets from source files
+│   ├── generate_charts.py            # Generates all 19 chart figures across both datasets
 │   └── generate_placement_report_pdf.py # Compiles the multi-page styled analytical PDF report
-├── assets/                          # Student photos and image assets
+├── assets/                           # Student photos and image assets
 │   ├── student_alex.jpg
 │   ├── student_david.jpg
 │   └── student_priya.jpg
 ├── css/
-│   └── styles.css                   # Custom responsive stylesheet & dark theme
+│   └── styles.css                    # Custom responsive stylesheet & dark theme
 ├── js/
-│   ├── app.js                       # UI interactions, modals, filtering & application logic
-│   ├── charts.js                    # Chart.js visualizations (trends, salary spectrum, department breakdown)
-│   └── data.js                      # Core placement data and student records
-├── index.html                       # Main interactive dashboard & student application tracker
-├── server.py                        # Lightweight Python local HTTP server (port 8000)
-├── start_server.bat                 # One-click Windows batch file to start the server
-├── open_in_browser.bat              # One-click Windows batch file to open directly in web browser
-├── .gitignore                       # Git ignore file
-└── README.md                        # Documentation
+│   ├── app.js                        # UI interactions, modals, filtering & application logic
+│   ├── charts.js                     # Chart.js visualizations (trends, salary spectrum, department breakdown)
+│   └── data.js                       # Core placement data and student records
+├── index.html                        # Main interactive dashboard & student application tracker
+├── server.py                         # Lightweight Python local HTTP server (port 8000)
+├── start_server.bat                  # One-click Windows batch file to start the server
+├── open_in_browser.bat               # One-click Windows batch file to open directly in web browser
+├── requirements.txt                  # Python dependencies
+├── LICENSE                           # Project MIT license
+├── .gitignore                        # Git ignore file
+└── README.md                         # Documentation
 ```
 
 ---
 
-## 🚀 How to Run
+## 🚀 How to Run the Interactive Web Dashboard
 
 ### Method 1: Direct File Launch (No setup required)
 - Double-click `open_in_browser.bat` or double-click `index.html` to open directly in your web browser.
@@ -54,7 +62,7 @@ college-placement-tracker/
 
 ---
 
-## ✨ Features
+## ✨ Web Platform Features
 
 - **Executive Overview Dashboard**: Real-time KPI metrics (Placement Rate, Average CTC, Total Offers, Active Recruiters).
 - **Interactive Student Application Tracker**:
@@ -114,4 +122,3 @@ python scripts/generate_charts.py
 # 3. Compile the 8-page analytical PDF report
 python scripts/generate_placement_report_pdf.py
 ```
-
