@@ -104,22 +104,18 @@ def parse_college_dataset(docx_path):
         'Jai Hind Mumbai'
     ]
 
-    # Resolve each college's metadata (Name, Stream, Tier)
     college_meta = []
     for c_idx in range(250):
         block = raw_blocks[c_idx * 7 : (c_idx + 1) * 7]
         text_corpus = ' \n '.join([' \n '.join(p[0]) + ' \n ' + p[1] for p in block])
         
-        # Stream
         stream_m = re.search(r'(Engineering|Management|Arts/Commerce)', text_corpus)
         stream = stream_m.group(1) if stream_m else 'Engineering'
         
-        # Tier
         tier_m = re.search(r'(Tier\s*[123])', text_corpus)
         tier = tier_m.group(1).replace('Tier', 'Tier ').strip() if tier_m else 'Tier 1'
         tier = ' '.join(tier.split()) # normalize whitespace to 'Tier X'
         
-        # Name
         name = None
         if 'State' in text_corpus and 'Technical' in text_corpus:
             num_m = re.search(r'Institute\s*(\d+)', text_corpus)
@@ -220,15 +216,12 @@ def parse_college_dataset(docx_path):
 
 def parse_student_dataset(xlsx_path):
     df = pd.read_excel(xlsx_path)
-    # Clean blank / invalid rows where Student ID or Branch is NaN
     df = df.dropna(subset=['Student ID', 'Branch'])
-    # Convert numerical types appropriately
     int_cols = ['Age', 'Backlogs']
     for col in int_cols:
         if col in df.columns:
             df[col] = df[col].astype(int)
     
-    # Fill NaN for text fields that are naturally empty for Not Placed
     df['Placement Domain'] = df['Placement Domain'].fillna('None')
     df['Alumni Path'] = df['Alumni Path'].fillna('None')
     df['Internship Domain'] = df['Internship Domain'].fillna('None')

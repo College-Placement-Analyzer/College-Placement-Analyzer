@@ -1,7 +1,6 @@
 import os
 import sys
 
-# Set matplotlib cache directory to local folder before import
 os.environ['MPLCONFIGDIR'] = os.path.abspath('data/matplotlib_cache')
 os.makedirs('data/matplotlib_cache', exist_ok=True)
 os.makedirs('charts', exist_ok=True)
@@ -14,7 +13,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-# Set global styles
 plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['figure.autolayout'] = False
@@ -24,7 +22,6 @@ plt.rcParams['grid.color'] = '#E2E8F0'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['grid.linewidth'] = 0.6
 
-# Palette definitions
 NAVY = '#1E3A8A'
 BLUE = '#2563EB'
 TEAL = '#0D9488'
@@ -40,12 +37,8 @@ def load_data():
     student_df = pd.read_csv('data/student_placement_records.csv')
     return college_df, student_df
 
-# ==============================================================================
-# DATASET 1: INSTITUTIONAL & MACRO PLACEMENT TRENDS (GRAPHS 1 - 8)
-# ==============================================================================
 
 def generate_chart1_pkg_trends(college_df):
-    """Multi-Line Trend: Highest, Average, and Median Package LPA (2020-2026)"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     yearly = college_df.groupby('Graduation_Year').agg({
@@ -61,7 +54,6 @@ def generate_chart1_pkg_trends(college_df):
             marker='s', lw=2.5, color=BLUE, label='Average Package (Mean)')
     ax.plot(years, yearly['Median_Mean'], marker='^', lw=2.5, color=TEAL, label='Median Package (Mean)')
     
-    # Peak highest package annotation
     max_row = college_df.loc[college_df['Highest_Package_LPA'].idxmax()]
     ax.scatter([max_row['Graduation_Year']], [max_row['Highest_Package_LPA']], color='#991B1B', s=90, zorder=5)
     ax.annotate(f"All-Time Peak: {max_row['Highest_Package_LPA']:.1f} LPA\n({max_row['College_Name']}, {max_row['Graduation_Year']})",
@@ -83,7 +75,6 @@ def generate_chart1_pkg_trends(college_df):
     print("Generated chart1_pkg_trends.png")
 
 def generate_chart2_stream_tier_placement_rate(college_df):
-    """Grouped Bar Chart: Placement Rate % by Institution Tier & Academic Stream"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     pivot = college_df.groupby(['Institution_Tier', 'Stream'])['Placement_Rate_Pct'].mean().unstack()
@@ -120,7 +111,6 @@ def generate_chart2_stream_tier_placement_rate(college_df):
     print("Generated chart2_stream_tier_placement_rate.png")
 
 def generate_chart3_tier_salary_boxplot(college_df):
-    """Box-and-Whisker Plot: Average and Highest Package Distribution Across Tiers"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.5, 3.6), dpi=300)
     
     tier_order = ['Tier 1', 'Tier 2', 'Tier 3']
@@ -147,7 +137,6 @@ def generate_chart3_tier_salary_boxplot(college_df):
     print("Generated chart3_tier_salary_boxplot.png")
 
 def generate_chart4_top_recruiters_bar(college_df):
-    """Horizontal Bar Chart: Top 15 Primary Recruiters by Institutional Hiring Reach"""
     fig, ax = plt.subplots(figsize=(7.5, 4.0), dpi=300)
     
     top_rec = college_df['Primary_Recruiter'].value_counts().head(15).sort_values(ascending=True)
@@ -171,7 +160,6 @@ def generate_chart4_top_recruiters_bar(college_df):
     print("Generated chart4_top_recruiters_bar.png")
 
 def generate_chart5_stream_year_heatmap(college_df):
-    """2D Heatmap Matrix: Average Package LPA across Streams and Graduation Years"""
     fig, ax = plt.subplots(figsize=(7.5, 3.2), dpi=300)
     
     pivot = college_df.pivot_table(index='Stream', columns='Graduation_Year', values='Average_Package_LPA', aggfunc='mean')
@@ -188,7 +176,6 @@ def generate_chart5_stream_year_heatmap(college_df):
     print("Generated chart5_stream_year_heatmap.png")
 
 def generate_chart6_scatter_placement_vs_avgpkg(college_df):
-    """Scatter Plot with Linear Regression: Placement Rate vs Average Package"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     tier_palette = {'Tier 1': '#2563EB', 'Tier 2': '#0D9488', 'Tier 3': '#E11D48'}
@@ -198,7 +185,6 @@ def generate_chart6_scatter_placement_vs_avgpkg(college_df):
         ax.scatter(sub['Placement_Rate_Pct'], sub['Average_Package_LPA'], 
                    label=tier, color=tier_palette[tier], alpha=0.55, s=30, edgecolors='none')
         
-    # Overall OLS Regression Line
     z = np.polyfit(college_df['Placement_Rate_Pct'], college_df['Average_Package_LPA'], 1)
     p = np.poly1d(z)
     corr = college_df['Placement_Rate_Pct'].corr(college_df['Average_Package_LPA'])
@@ -216,7 +202,6 @@ def generate_chart6_scatter_placement_vs_avgpkg(college_df):
     print("Generated chart6_scatter_placement_vs_avgpkg.png")
 
 def generate_chart7_highest_pkg_area(college_df):
-    """Area / Multi-Line Chart: Evolution of Median & Max Packages by Tier"""
     fig, ax = plt.subplots(figsize=(7.5, 3.6), dpi=300)
     
     tier_trends = college_df.groupby(['Graduation_Year', 'Institution_Tier'])['Median_Package_LPA'].mean().unstack()
@@ -242,10 +227,8 @@ def generate_chart7_highest_pkg_area(college_df):
     print("Generated chart7_highest_pkg_area.png")
 
 def generate_chart8_skills_demanded_bar(college_df):
-    """Categorical Bar: Top Recruiter Competencies Demanded in Campus Hiring"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
-    # Split skills by comma and count
     all_skills = []
     for s in college_df['Skills_Demanded'].dropna():
         tokens = [t.strip() for t in s.split(',') if t.strip()]
@@ -272,15 +255,10 @@ def generate_chart8_skills_demanded_bar(college_df):
     print("Generated chart8_skills_demanded_bar.png")
 
 
-# ==============================================================================
-# DATASET 2: STUDENT PERFORMANCE & CAREER OUTCOMES (GRAPHS 9 - 19)
-# ==============================================================================
 
 def generate_chart9_donut_placement_status_and_domain(student_df):
-    """Dual Donut Charts: (A) Placement Success Rate, (B) Placement Domain Allocation"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.5, 3.4), dpi=300)
     
-    # 1. Placement Status Donut
     status_counts = student_df['Placement Status'].value_counts()
     status_colors = ['#10B981', '#E11D48'] # Placed green, Not placed red
     wedges1, texts1, autotexts1 = ax1.pie(status_counts, labels=status_counts.index, autopct='%1.1f%%',
@@ -292,7 +270,6 @@ def generate_chart9_donut_placement_status_and_domain(student_df):
         at.set_fontsize(8.5)
     ax1.set_title(f'Overall Placement Rate\n(N = {len(student_df):,})', fontsize=9.5, fontweight='bold', color='#0F172A')
     
-    # 2. Placement Domain Donut (Placed students only)
     placed_df = student_df[student_df['Placement Status'] == 'Placed']
     domain_counts = placed_df['Placement Domain'].value_counts()
     domain_colors = sns.color_palette('Set2', len(domain_counts))
@@ -312,12 +289,10 @@ def generate_chart9_donut_placement_status_and_domain(student_df):
     print("Generated chart9_donut_placement_status_and_domain.png")
 
 def generate_chart10_ctc_and_gpa_histogram_kde(student_df):
-    """Dual Histogram with KDE: CTC Distribution and Cumulative GPA Distribution"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.5, 3.5), dpi=300)
     
     placed = student_df[student_df['Placement Status'] == 'Placed']
     
-    # CTC Histogram & KDE
     sns.histplot(placed['CTC (LPA)'], kde=True, ax=ax1, color='#2563EB', bins=18, edgecolor='white', alpha=0.6)
     ctc_mean = placed['CTC (LPA)'].mean()
     ctc_med = placed['CTC (LPA)'].median()
@@ -329,7 +304,6 @@ def generate_chart10_ctc_and_gpa_histogram_kde(student_df):
     ax1.legend(fontsize=8, frameon=True, facecolor=LIGHT_BG)
     ax1.grid(True, linestyle='--', alpha=0.6)
     
-    # Cumulative GPA Histogram & KDE
     sns.histplot(student_df['Average GPA'], kde=True, ax=ax2, color='#0D9488', bins=18, edgecolor='white', alpha=0.6)
     gpa_mean = student_df['Average GPA'].mean()
     gpa_med = student_df['Average GPA'].median()
@@ -348,7 +322,6 @@ def generate_chart10_ctc_and_gpa_histogram_kde(student_df):
     print("Generated chart10_ctc_and_gpa_histogram_kde.png")
 
 def generate_chart11_branch_gpa_violin(student_df):
-    """Split Violin Plot: GPA Distribution by Branch Stratified by Placement Status"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL']
@@ -369,13 +342,11 @@ def generate_chart11_branch_gpa_violin(student_df):
     print("Generated chart11_branch_gpa_violin.png")
 
 def generate_chart12_attendance_vs_gpa_scatter(student_df):
-    """Bivariate Scatter Plot: Attendance (%) vs Average GPA with Marginal Histograms"""
     g = sns.JointGrid(data=student_df, x='Attendance (%)', y='Average GPA', hue='Placement Status',
                       palette={'Placed': '#059669', 'Not Placed': '#DC2626'}, height=4.2, ratio=5)
     g.plot_joint(sns.scatterplot, alpha=0.55, s=28, edgecolors='none')
     g.plot_marginals(sns.histplot, multiple='stack', alpha=0.6, element='step')
     
-    # Threshold lines
     g.ax_joint.axvline(75, color='#F59E0B', linestyle='--', lw=1.2, label='75% Mandatory Attendance')
     g.ax_joint.axhline(7.0, color='#6366F1', linestyle='--', lw=1.2, label='7.0 GPA Eligibility Cutoff')
     g.ax_joint.legend(fontsize=7.5, frameon=True, facecolor=LIGHT_BG, loc='lower left')
@@ -387,7 +358,6 @@ def generate_chart12_attendance_vs_gpa_scatter(student_df):
     print("Generated chart12_attendance_vs_gpa_scatter.png")
 
 def generate_chart13_backlogs_impact_barchart(student_df):
-    """Bar Chart: Backlog Count vs Placement Rate and Average CTC"""
     fig, ax1 = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     backlog_stats = student_df.groupby('Backlogs').agg(
@@ -400,7 +370,6 @@ def generate_chart13_backlogs_impact_barchart(student_df):
     x = backlog_stats['Backlogs']
     width = 0.38
     
-    # Placement Rate Bar
     bars = ax1.bar(x - width/2, backlog_stats['Placement_Rate'], width=width, color=NAVY, label='Placement Rate (%)', edgecolor='white')
     ax1.set_xlabel('Number of Active / Historical Academic Backlogs', fontsize=9, fontweight='semibold', color=SLATE)
     ax1.set_ylabel('Placement Rate (%)', fontsize=9, fontweight='semibold', color=NAVY)
@@ -413,7 +382,6 @@ def generate_chart13_backlogs_impact_barchart(student_df):
                      xytext=(0, 2), textcoords="offset points",
                      ha='center', va='bottom', fontsize=7.5, fontweight='bold', color=NAVY)
         
-    # CTC Bar on secondary axis
     ax2 = ax1.twinx()
     bars2 = ax2.bar(x + width/2, backlog_stats['Mean_CTC'], width=width, color=TEAL, label='Mean CTC for Placed (LPA)', edgecolor='white')
     ax2.set_ylabel('Mean CTC of Placed Students (LPA)', fontsize=9, fontweight='semibold', color=TEAL)
@@ -427,7 +395,6 @@ def generate_chart13_backlogs_impact_barchart(student_df):
                          xytext=(0, 2), textcoords="offset points",
                          ha='center', va='bottom', fontsize=7.5, fontweight='bold', color=TEAL)
             
-    # Combined legend
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper right', frameon=True, facecolor=LIGHT_BG, fontsize=8)
@@ -441,10 +408,8 @@ def generate_chart13_backlogs_impact_barchart(student_df):
     print("Generated chart13_backlogs_impact_barchart.png")
 
 def generate_chart14_internship_roi_groupedbar(student_df):
-    """Grouped Bar: Placement Rate and Average CTC by Internship Status & Domain"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.5, 3.6), dpi=300)
     
-    # 1. Internship Done Yes vs No
     intern_stat = student_df.groupby('Internship Done').agg(
         Total=('Student ID', 'count'),
         Placed=('Placement Status', lambda s: (s == 'Placed').sum()),
@@ -462,7 +427,6 @@ def generate_chart14_internship_roi_groupedbar(student_df):
     ax1.set_ylim(0, 80)
     ax1.grid(axis='y', linestyle='--', alpha=0.6)
     
-    # 2. Average CTC by Internship Domain
     domain_df = student_df[(student_df['Internship Done'] == 'Yes') & (student_df['Placement Status'] == 'Placed') & (student_df['Internship Domain'] != 'None')]
     domain_ctc = domain_df.groupby('Internship Domain')['CTC (LPA)'].mean().sort_values(ascending=False)
     
@@ -485,10 +449,8 @@ def generate_chart14_internship_roi_groupedbar(student_df):
     print("Generated chart14_internship_roi_groupedbar.png")
 
 def generate_chart15_correlation_heatmap(student_df):
-    """Correlation Matrix Heatmap: Academic and Placement Variables"""
     fig, ax = plt.subplots(figsize=(7.5, 4.0), dpi=300)
     
-    # Select key numerical columns
     cols = ['Age', 'Average GPA', 'Backlogs', 'Attendance (%)', 'CTC (LPA)', 
             'Sem1 GPA', 'Sem2 GPA', 'Sem3 GPA', 'Sem4 GPA', 'Sem5 GPA', 'Sem6 GPA', 'Sem7 GPA', 'Sem8 GPA']
     
@@ -506,7 +468,6 @@ def generate_chart15_correlation_heatmap(student_df):
     print("Generated chart15_correlation_heatmap.png")
 
 def generate_chart16_branch_radar_profile(student_df):
-    """Spider / Radar Chart: Multi-Dimensional Performance Profiles of Departments"""
     fig, ax = plt.subplots(figsize=(7.5, 4.0), subplot_kw=dict(polar=True), dpi=300)
     
     categories = ['Average GPA', 'Attendance %', 'Placement Rate %', 'Internship %', 'Average CTC']
@@ -515,7 +476,6 @@ def generate_chart16_branch_radar_profile(student_df):
     branch_stats = []
     branches = ['CSE', 'IT', 'ECE', 'MECH'] # Select 4 major distinct branches for clarity
     
-    # Precompute maximums for normalization
     for b in branches:
         sub = student_df[student_df['Branch'] == b]
         placed_sub = sub[sub['Placement Status'] == 'Placed']
@@ -530,7 +490,6 @@ def generate_chart16_branch_radar_profile(student_df):
         })
     df_rad = pd.DataFrame(branch_stats)
     
-    # Normalize each column 0.2 to 1.0 for aesthetic radar shape
     norm_df = df_rad.copy()
     norm_df['Average GPA'] = (df_rad['Average GPA'] - 6.5) / 1.5
     norm_df['Attendance %'] = (df_rad['Attendance %'] - 65) / 25
@@ -563,7 +522,6 @@ def generate_chart16_branch_radar_profile(student_df):
     print("Generated chart16_branch_radar_profile.png")
 
 def generate_chart17_semester_gpa_progression(student_df):
-    """Longitudinal Line Chart: Semester 1 to Semester 8 GPA Trajectory (Placed vs Unplaced)"""
     fig, ax = plt.subplots(figsize=(7.5, 3.6), dpi=300)
     
     sem_cols = [f'Sem{i} GPA' for i in range(1, 9)]
@@ -598,14 +556,12 @@ def generate_chart17_semester_gpa_progression(student_df):
     print("Generated chart17_semester_gpa_progression.png")
 
 def generate_chart18_skills_vs_ctc_bar(student_df):
-    """Bar Chart with Error Bars: Technical Skill Competencies vs Average CTC Realization"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     tech_skills = ['Python', 'SQL', 'C++', 'Java', 'Machine Learning', 'Web Development', 'Data Science']
     
     skill_stats = []
     for skill in tech_skills:
-        # Check students who have this skill
         mask = student_df['Skills'].str.contains(skill, na=False, regex=False)
         sub_placed = student_df[mask & (student_df['Placement Status'] == 'Placed')]
         sub_all = student_df[mask]
@@ -642,7 +598,6 @@ def generate_chart18_skills_vs_ctc_bar(student_df):
     print("Generated chart18_skills_vs_ctc_bar.png")
 
 def generate_chart19_alumni_path_distribution(student_df):
-    """Grouped Stacked Bar: Alumni Path Allocation across Placement Domains"""
     fig, ax = plt.subplots(figsize=(7.5, 3.8), dpi=300)
     
     placed = student_df[student_df['Placement Status'] == 'Placed']
@@ -651,7 +606,6 @@ def generate_chart19_alumni_path_distribution(student_df):
     paths = ['Job', 'Startup', 'Higher Studies', 'Research']
     path_colors = {'Job': '#1D4ED8', 'Startup': '#F59E0B', 'Higher Studies': '#10B981', 'Research': '#8B5CF6'}
     
-    # Reindex columns
     pivot = pivot[[p for p in paths if p in pivot.columns]]
     
     pivot.plot(kind='bar', stacked=True, color=[path_colors[c] for c in pivot.columns], ax=ax, edgecolor='white', width=0.55)

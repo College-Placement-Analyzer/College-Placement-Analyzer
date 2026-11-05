@@ -11,13 +11,11 @@ from reportlab.platypus import (
 )
 from reportlab.pdfgen import canvas
 
-# Dimensions
 PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN = 36 # 0.5 inch
 USABLE_WIDTH = PAGE_WIDTH - 2 * MARGIN
 USABLE_HEIGHT = PAGE_HEIGHT - 2 * MARGIN
 
-# Brand Colors
 PRIMARY_NAVY = colors.HexColor('#1E293B')
 ACCENT_BLUE = colors.HexColor('#1E3A8A')
 VIBRANT_BLUE = colors.HexColor('#2563EB')
@@ -48,7 +46,6 @@ class NumberedCanvas(canvas.Canvas):
         canvas.Canvas.save(self)
 
     def draw_page_decorations(self, total_pages):
-        # Header (Pages 2 through total_pages)
         if self._pageNumber > 1:
             self.saveState()
             self.setFont('Helvetica-Bold', 8)
@@ -58,13 +55,11 @@ class NumberedCanvas(canvas.Canvas):
             self.setFillColor(MUTED_TEXT)
             self.drawRightString(PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 26, "CAMPUS PLACEMENT BENCHMARK 2020–2026")
             
-            # Decorative rule
             self.setStrokeColor(BORDER_COLOR)
             self.setLineWidth(0.6)
             self.line(MARGIN, PAGE_HEIGHT - 30, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 30)
             self.restoreState()
 
-        # Running Footer (All pages)
         self.saveState()
         self.setStrokeColor(BORDER_COLOR)
         self.setLineWidth(0.6)
@@ -255,13 +250,9 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     styles = create_styles()
     story = []
     
-    # Load dataset for numbers
     cdf = pd.read_csv('data/college_placement_trends.csv')
     sdf = pd.read_csv('data/student_placement_records.csv')
     
-    # =========================================================================
-    # PAGE 1: COVER PAGE & EXECUTIVE DASHBOARD
-    # =========================================================================
     story.append(Paragraph("Institutional Research & Placement Intelligence", styles['CoverSuperTitle']))
     story.append(Paragraph("College Placement Analytics & Multi-Dataset Visualization Report", styles['CoverTitle']))
     story.append(Paragraph(
@@ -270,7 +261,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
         styles['CoverSubtitle']
     ))
     
-    # Metadata Block
     meta_data = [
         [
             Paragraph("<b>Scope:</b> 250 National Institutions (Tiers 1, 2, 3)", styles['TableCell']),
@@ -292,7 +282,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(meta_table)
     story.append(Spacer(1, 10))
     
-    # 4 Executive KPI Metric Cards
     c1 = build_card("250", "Institutions Tracked", VIBRANT_BLUE, styles)
     c2 = build_card("₹135.3L", "Peak Offered CTC", ROSE, styles)
     c3 = build_card("51.6%", "Student Placement Rate", EMERALD, styles)
@@ -309,7 +298,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(cards_table)
     story.append(Spacer(1, 12))
     
-    # Executive Briefing
     story.append(Paragraph("<b>Executive Summary & Analytical Architecture</b>", styles['SubSectionHeading']))
     story.append(Paragraph(
         "This analytical monograph synthesizes empirical evidence from two complementary datasets to provide a 360-degree perspective on collegiate hiring in India. "
@@ -319,7 +307,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(Spacer(1, 4))
     
-    # Table of Contents
     story.append(Paragraph("<b>Report Structure & Table of Contents</b>", styles['SubSectionHeading']))
     toc_data = [
         [Paragraph("<b>Section</b>", styles['TableHeader']), Paragraph("<b>Focus Area</b>", styles['TableHeader']), Paragraph("<b>Visualizations Included</b>", styles['TableHeader']), Paragraph("<b>Page</b>", styles['TableHeader'])],
@@ -346,9 +333,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(toc_table)
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 2: SECTION 1 - MACRO PLACEMENT DYNAMICS & SALARY EVOLUTION (DATASET 1)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 1: MACRO PLACEMENT DYNAMICS & LONGITUDINAL SALARY EVOLUTION</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "Institutional recruitment across India's premier higher-education system has experienced steady upward momentum between 2020 and 2026. "
@@ -377,9 +361,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 3: SECTION 2 - TIER DISPARITIES & RECRUITER LANDSCAPE (DATASET 1)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 2: INSTITUTIONAL TIER STRATIFICATION & RECRUITER FOOTPRINTS</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "The empirical wage gap between tier strata represents one of the starkest findings in national campus recruitment data. "
@@ -393,7 +374,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(Image('charts/chart3_tier_salary_boxplot.png', width=500, height=210))
     story.append(Spacer(1, 4))
     
-    # Comparative Tier Metrics Table
     tier_table_data = [
         [Paragraph("<b>Institutional Tier</b>", styles['TableHeader']), Paragraph("<b>Cohort Count</b>", styles['TableHeader']), Paragraph("<b>Mean Placement %</b>", styles['TableHeader']), Paragraph("<b>Mean Avg CTC</b>", styles['TableHeader']), Paragraph("<b>Median CTC</b>", styles['TableHeader']), Paragraph("<b>Max Peak CTC</b>", styles['TableHeader']), Paragraph("<b>Primary Hiring Profile</b>", styles['TableHeader'])],
         [Paragraph("<b>Tier 1</b>", styles['TableCell']), Paragraph("742 (42.4%)", styles['TableCellCenter']), Paragraph("91.4% ± 4.2%", styles['TableCellCenter']), Paragraph("₹21.58 LPA", styles['TableCellCenter']), Paragraph("₹22.67 LPA", styles['TableCellCenter']), Paragraph("₹135.30 LPA", styles['TableCellCenter']), Paragraph("Global Tech, MBB Consulting, Quant Funds", styles['TableCell'])],
@@ -424,9 +404,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 4: SECTION 3 - STREAM DISPARITIES, REGRESSION & SKILLS (DATASET 1)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 3: STREAM-WISE DYNAMICS, PLACEMENT CORRELATIONS & SKILL SPECS</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "A cross-sectional view of academic streams reveals that Management programs generate the highest average package (₹18.69 LPA), "
@@ -436,7 +413,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(Spacer(1, 2))
     
-    # Grid of Charts 5 & 6 side by side
     grid_1 = [
         [Image('charts/chart5_stream_year_heatmap.png', width=245, height=160),
          Image('charts/chart6_scatter_placement_vs_avgpkg.png', width=245, height=160)]
@@ -453,7 +429,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(t_grid1)
     story.append(Spacer(1, 4))
     
-    # Grid of Charts 7 & 8 side by side
     grid_2 = [
         [Image('charts/chart7_highest_pkg_area.png', width=245, height=165),
          Image('charts/chart8_skills_demanded_bar.png', width=245, height=165)]
@@ -476,9 +451,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 5: SECTION 4 - STUDENT DEMOGRAPHICS & OUTCOMES (DATASET 2)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 4: STUDENT COHORT PROFILE, HIRING DOMAINS & COMPENSATION DISTRIBUTIONS</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "Transitioning from macro institutional indicators to candidate-level mechanics, Dataset 2 tracks <b>1,999 individual engineering candidates</b>. "
@@ -491,7 +463,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(Image('charts/chart9_donut_placement_status_and_domain.png', width=500, height=215))
     story.append(Spacer(1, 4))
     
-    # Domain breakdown table
     domain_table_data = [
         [Paragraph("<b>Hiring Domain</b>", styles['TableHeader']), Paragraph("<b>Offers Converted</b>", styles['TableHeader']), Paragraph("<b>Domain Share %</b>", styles['TableHeader']), Paragraph("<b>Mean CTC (LPA)</b>", styles['TableHeader']), Paragraph("<b>Median CTC (LPA)</b>", styles['TableHeader']), Paragraph("<b>Max CTC (LPA)</b>", styles['TableHeader'])],
         [Paragraph("<b>Software Development</b>", styles['TableCell']), Paragraph("251", styles['TableCellCenter']), Paragraph("24.3%", styles['TableCellCenter']), Paragraph("₹11.45 LPA", styles['TableCellCenter']), Paragraph("₹11.26 LPA", styles['TableCellCenter']), Paragraph("₹19.99 LPA", styles['TableCellCenter'])],
@@ -524,9 +495,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 6: SECTION 5 - DEPARTMENTAL DIVERGENCE, ATTENDANCE & BACKLOGS (DATASET 2)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 5: DEPARTMENTAL DIVERGENCE, ACADEMIC THRESHOLDS & BACKLOG DYNAMICS</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "Cross-departmental performance comparison illustrates that Electrical & Electronics (EEE: 59.1%) and Electronics & Communication (ECE: 53.3%) achieved the highest placement rates, "
@@ -539,7 +507,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(Image('charts/chart11_branch_gpa_violin.png', width=500, height=215))
     story.append(Spacer(1, 4))
     
-    # Charts 12 & 13 side-by-side
     grid_3 = [
         [Image('charts/chart12_attendance_vs_gpa_scatter.png', width=245, height=195),
          Image('charts/chart13_backlogs_impact_barchart.png', width=245, height=195)]
@@ -562,9 +529,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 7: SECTION 6 - INTERNSHIP LEVERAGE, CORRELATIONS & PROGRESSION (DATASET 2)
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 6: INTERNSHIP LEVERAGE, CORRELATION MATRICES & SEMESTER PROGRESSION</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "Pre-placement internships exert a measurable influence on the quality and specialization of final career offers. "
@@ -577,7 +541,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(Image('charts/chart14_internship_roi_groupedbar.png', width=500, height=205))
     story.append(Spacer(1, 4))
     
-    # Charts 15 & 17 side-by-side
     grid_4 = [
         [Image('charts/chart15_correlation_heatmap.png', width=245, height=195),
          Image('charts/chart17_semester_gpa_progression.png', width=245, height=195)]
@@ -600,9 +563,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(PageBreak())
     
-    # =========================================================================
-    # PAGE 8: SECTION 7 - RADAR BENCHMARKING, SKILLS PREMIUM & STRATEGIC ROADMAP
-    # =========================================================================
     story.append(Paragraph("<b>SECTION 7: MULTI-AXIS BENCHMARKING, SKILL PREMIUMS & STRATEGIC RECOMMENDATIONS</b>", styles['SectionHeading']))
     story.append(Paragraph(
         "Synthesizing institutional macro realities with candidate-level competencies provides a clear roadmap for university leadership, career development cells, and students. "
@@ -611,7 +571,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ))
     story.append(Spacer(1, 2))
     
-    # Charts 16 & 18 side-by-side
     grid_5 = [
         [Image('charts/chart16_branch_radar_profile.png', width=245, height=185),
          Image('charts/chart18_skills_vs_ctc_bar.png', width=245, height=185)]
@@ -631,7 +590,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     story.append(Image('charts/chart19_alumni_path_distribution.png', width=500, height=180))
     story.append(Spacer(1, 4))
     
-    # Strategic Recommendations Table
     rec_data = [
         [Paragraph("<b>Pillar</b>", styles['TableHeader']), Paragraph("<b>Observed Empirical Barrier</b>", styles['TableHeader']), Paragraph("<b>Actionable Institutional Intervention</b>", styles['TableHeader'])],
         [Paragraph("<b>1. Tier Disparity</b>", styles['TableCell']), Paragraph("Tier 3 colleges face a 4.7x wage discount (₹4.59L vs ₹21.58L).", styles['TableCell']), Paragraph("Introduce industry co-certified electives (Cloud, ML, Quant Finance) to replace low-yield legacy coursework.", styles['TableCell'])],
@@ -653,7 +611,6 @@ def build_pdf(filename="College_Placement_Comprehensive_Analytics_Report.pdf"):
     ]))
     story.append(rec_table)
     
-    # Build Document
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"Report successfully compiled to {filename}")
 
