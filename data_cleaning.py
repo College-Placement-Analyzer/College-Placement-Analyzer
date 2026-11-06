@@ -249,6 +249,7 @@ def clean_students_data(excel_path):
     df_valid = df_raw[~missing_id_mask].copy()
 
     cols_no_id = [c for c in df_valid.columns if c != 'Student ID']
+    # pyrefly: ignore[unexpected-keyword]
     duplicate_mask = df_valid.duplicated(subset=cols_no_id, keep='first')
     duplicate_count = duplicate_mask.sum()
 

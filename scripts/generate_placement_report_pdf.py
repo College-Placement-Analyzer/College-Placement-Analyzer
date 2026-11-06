@@ -96,6 +96,7 @@ def create_styles():
         spaceAfter=8
     ))
     
+    SLATE_COLOR = None
     styles.add(ParagraphStyle(
         'CoverSubtitle',
         parent=styles['Normal'],
