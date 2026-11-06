@@ -18,7 +18,7 @@ The project analyzes two datasets:
 | **4. Cleaned Dataset** | `clean_dataset.xlsx` | Multi-sheet cleaned workbook (`Cleaned_Students`, `Placement_Data`, `Combined_Data`, `Data_Quality_Summary`) |
 | **5. Data Analysis** | `Data_analysis.py` | Statistical analysis, hypothesis testing, correlation metrics, and cohort evaluations |
 | **6. Data Visualisation** | `Data_visualisation.py` | Publication-ready visual charts (19 figures) generated across both datasets |
-| **7. Dashboard** | `Dashboard.pbix` | Power BI dashboard template connected to the cleaned placement dataset |
+| **7. Dashboard** | `DAV_Project.pbix` | Power BI dashboard template connected to the cleaned placement dataset |
 | **Submission Archive** | `College_Placement_Project_Submission.zip` | Complete submission package containing all required deliverables |
 
 ---
@@ -32,7 +32,7 @@ college-placement-tracker/
 ├── data_cleaning.py                                # End-to-end data cleaning script
 ├── Data_analysis.py                                # Statistical and exploratory data analysis
 ├── Data_visualisation.py                           # Chart generation script (19 figures)
-├── Dashboard.pbix                                  # Power BI dashboard file
+├── DAV_Project.pbix                                  # Power BI dashboard file
 ├── College_Placement_Comprehensive_Analytics_Report.pdf # 8-page compiled publication report
 ├── College_Placement_Project_Submission.zip        # Packaged zip containing all deliverables
 ├── requirements.txt                                # Python package dependencies
